@@ -58,7 +58,7 @@ if ($tipo == "registrar") {
         //repuesta
         if ($_POST) {
             $dni = $_POST['dni'];
-            $apellidos_nombres = $_POST['apellidos_nombres'];
+            $apellidos_nombres = $_POST['apellidos_nombres']; 
             $correo = $_POST['correo'];
             $telefono = $_POST['telefono'];
 
@@ -76,7 +76,7 @@ if ($tipo == "registrar") {
                         // caso de administrador y director
                         $arr_Respuesta = array('status' => true, 'mensaje' => 'Registro Exitoso');
                     } else {
-                        $arr_Respuesta = array('status' => false, 'mensaje' => 'Error al registrar producto');
+                        $arr_Respuesta = array('status' => false, 'mensaje' => 'Error al registrar usuario');
                     }
                 }
             }
