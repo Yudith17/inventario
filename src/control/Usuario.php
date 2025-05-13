@@ -54,26 +54,28 @@ if ($tipo == "listar_usuarios_ordenados_tabla") {
 if ($tipo == "registrar") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
-        //print_r($_POST);
-        //repuesta
         if ($_POST) {
             $dni = $_POST['dni'];
             $apellidos_nombres = $_POST['apellidos_nombres']; 
             $correo = $_POST['correo'];
             $telefono = $_POST['telefono'];
+            $password = $_POST['password']; // Nuevo campo
 
-            if ($dni == "" || $apellidos_nombres == "" || $correo == "" || $telefono == "") {
-                //repuesta
+            // Validar campos
+            if ($dni == "" || $apellidos_nombres == "" || $correo == "" || $telefono == "" || $password == "") {
                 $arr_Respuesta = array('status' => false, 'mensaje' => 'Error, campos vacíos');
             } else {
                 $arr_Usuario = $objUsuario->buscarUsuarioByDni($dni);
                 if ($arr_Usuario) {
                     $arr_Respuesta = array('status' => false, 'mensaje' => 'Registro Fallido, Usuario ya se encuentra registrado');
                 } else {
-                    $id_usuario = $objUsuario->registrarUsuario($dni, $apellidos_nombres, $correo, $telefono);
+                    // Encriptar la contraseña
+                    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+                    // Registrar usuario con contraseña encriptada
+                    $id_usuario = $objUsuario->registrarUsuario($dni, $apellidos_nombres, $correo, $telefono, $passwordHash);
+                    
                     if ($id_usuario > 0) {
-                        // array con los id de los sistemas al que tendra el acceso con su rol registrado
-                        // caso de administrador y director
                         $arr_Respuesta = array('status' => true, 'mensaje' => 'Registro Exitoso');
                     } else {
                         $arr_Respuesta = array('status' => false, 'mensaje' => 'Error al registrar usuario');
@@ -82,6 +84,7 @@ if ($tipo == "registrar") {
             }
         }
     }
+    
     echo json_encode($arr_Respuesta);
 }
 
