@@ -23,6 +23,17 @@ $objAdmin = new AdminModel();
 $id_sesion = $_POST['sesion'];
 $token = $_POST['token'];
 
+if ($tipo == "validar_datos_reset_password"){
+  $id_email = $_POST['id'];
+  $token_email = $_POST['token'];
+  $arr_Respuesta = array('status'=> false, 'msg' => 'Link Caducado');
+  $datos_usuario = $objUsuario->buscarSesionLoginById($id_email);
+  if ($datos_usuario->reset_password==1 && password_verify($datos_usuario->token_password,$token_email)) {
+    $arr_Respuesta = array('status'=> true, 'msg' => 'ok');
+  }
+  echo json_encode($arr_Respuesta);
+}
+
 if ($tipo == "listar_usuarios_ordenados_tabla") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
@@ -199,91 +210,120 @@ try {
     $mail->CharSet = 'UTF-8';                                 //Set email format to HTML
     $mail->Subject = 'Cambio de Contraseña - Sistema de Inventario';
     $mail->Body    = '<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Correo Empresarial</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #f4f4f4;
-    }
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background-color: #ffffff;
-      font-family: Arial, sans-serif;
-      color: #333333;
-      border: 1px solid #dddddd;
-    }
-    .header {
-      background-color: #EB5AE6;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    .content {
-      padding: 30px;
-    }
-    .content h1 {
-      font-size: 22px;
-      margin-bottom: 20px;
-    }
-    .content p {
-      font-size: 16px;
-      line-height: 1.5;
-    }
-    .button {
-      display: inline-block;
-      background-color: #EB5AE6;
-      color: #ffffff !important;
-      padding: 12px 25px;
-      margin: 20px 0;
-      text-decoration: none;
-      border-radius: 4px;
-    }
-    .footer {
-      background-color: #eeeeee;
-      text-align: center;
-      padding: 15px;
-      font-size: 12px;
-      color: #666666;
-    }
-    @media screen and (max-width: 600px) {
-      .content, .header, .footer {
-        padding: 15px !important;
-      }
-      .button {
-        padding: 10px 20px !important;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h2>Nombre de tu empresa</h2>
-    </div>
-    <div class="content">
-      <h1>Hola [Nombre del cliente],</h1>
-      <p>
-        Te saludamos cordialmente. Queremos informarte sobre nuestras últimas novedades y promociones exclusivas para ti.
-      </p>
-      <p>
-        ¡No te pierdas nuestras ofertas especiales por tiempo limitado!
-      </p>
-      <a href="https://www.tusitio.com/promocion" class="button">Ver más</a>
-      <p>Gracias por confiar en nosotros.</p>
-    </div>
-    <div class="footer">
-      © 2025 Nombre de tu empresa. Todos los derechos reservados.<br>
-      <a href="https://www.tusitio.com/desuscribirse">Cancelar suscripción</a>
-    </div>
-  </div>
-</body>
-</html>';
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Correo Empresarial</title>
+      <style>
+        body {
+          margin: 0;
+          padding: 0;
+          background-color: #FFF0F5; /* Fondo bonito */
+          font-family:sans-serif;
+        }
+        .container {
+          max-width: 600px;
+          margin: 40px auto;
+          background-color: #ffffff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+        .header {
+          background-color: #F7C6D9; /* Rosa pastel */
+          color: #4A1C40;
+          text-align: center;
+          padding: 30px 20px;
+        }
+        .header img {
+          max-height: 60px;
+          margin-bottom: 10px;
+        }
+        .header h2 {
+          margin: 0;
+          font-size: 26px;
+        }
+        .content {
+          padding: 30px;
+          color: #444;
+        }
+        .content h1 {
+          font-size: 22px;
+          margin-bottom: 20px;
+          color: #D04C87;
+        }
+        .content p {
+          font-size: 16px;
+          line-height: 1.6;
+          margin-bottom: 15px;
+        }
+        .button {
+          display: inline-block;
+          background-color: #F7C6D9;
+          color: #4A1C40 !important;
+          padding: 12px 25px;
+          margin: 20px 0;
+          text-decoration: none;
+          border-radius: 8px;
+          font-weight: bold;
+          border: 2px solid #F7C6D9;
+          transition: background-color 0.3s ease;
+        }
+        .button:hover {
+          background-color: #f0a7c0;
+          color: white !important;
+        }
+        .footer {
+          background-color: #fce4ec;
+          text-align: center;
+          padding: 15px;
+          font-size: 12px;
+          color: #6d4c5b;
+        }
+        .footer a {
+          color: #D04C87;
+          text-decoration: none;
+        }
+        @media screen and (max-width: 600px) {
+          .content, .header, .footer {
+            padding: 20px !important;
+          }
+          .button {
+            padding: 10px 20px !important;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+        <img src="src/view/img/imagen.png" alt="Logo de la empresa" style="width: 120px; max-height: 60px; height: auto; display: block; margin: 0 auto 15px auto;">
+          <h2>Peques con Estilo</h2>
+        </div>
+        <div class="content">
+          <h1>Hola '.$datos_usuario->nombres_apellidos.',</h1>
+          <p>
+            Hemos recibido una solicitud para cambiar tu contraseña en <strong>Peques con Estilo</strong>.
+          </p>
+          <p>
+            Si fuiste tú quien solicitó este cambio, haz clic en el siguiente botón para restablecer tu contraseña:
+          </p>
+          <p>
+          Si no solicitaste este cambio, por favor ignora este correo. Tu contraseña actual seguirá siendo válida.
+        </p>
+        <p>Gracias por confiar en nosotros.</p>
+      </div>
+          <a href="'.BASE_URL.'reset-password?data='.$datos_usuario->id.'&data2='.$token.'" class="button">Cambiar Contraseña</a>
+          <p>Gracias por tu preferencia y confianza en nosotros.</p>
+        </div>
+        <div class="footer">
+          © 2025 Peques con Estilo. Todos los derechos reservados.<br>
+          <a href="'.BASE_URL.'">Cancelar suscripción</a>
+        </div>
+      </div>
+    </body>
+    </html>';
     
     $mail->send();
     echo 'Message has been sent';

@@ -8,52 +8,75 @@
     body {
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
+      background-color: #FFF0F5; /* Fondo bonito */
+      font-family: 'Segoe UI', sans-serif;
     }
     .container {
       max-width: 600px;
-      margin: auto;
+      margin: 40px auto;
       background-color: #ffffff;
-      font-family: Arial, sans-serif;
-      color: #333333;
-      border: 1px solid #dddddd;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
     }
     .header {
-      background-color: #EB5AE6;
-      color: white;
-      padding: 20px;
+      background-color: #F7C6D9; /* Rosa pastel */
+      color: #4A1C40;
       text-align: center;
+      padding: 30px 20px;
+    }
+    .header img {
+      max-height: 60px;
+      margin-bottom: 10px;
+    }
+    .header h2 {
+      margin: 0;
+      font-size: 26px;
     }
     .content {
       padding: 30px;
+      color: #444;
     }
     .content h1 {
       font-size: 22px;
       margin-bottom: 20px;
+      color: #D04C87;
     }
     .content p {
       font-size: 16px;
-      line-height: 1.5;
+      line-height: 1.6;
+      margin-bottom: 15px;
     }
     .button {
       display: inline-block;
-      background-color: #EB5AE6;
-      color: #ffffff !important;
+      background-color: #F7C6D9;
+      color: #4A1C40 !important;
       padding: 12px 25px;
       margin: 20px 0;
       text-decoration: none;
-      border-radius: 4px;
+      border-radius: 8px;
+      font-weight: bold;
+      border: 2px solid #F7C6D9;
+      transition: background-color 0.3s ease;
+    }
+    .button:hover {
+      background-color: #f0a7c0;
+      color: white !important;
     }
     .footer {
-      background-color: #eeeeee;
+      background-color: #fce4ec;
       text-align: center;
       padding: 15px;
       font-size: 12px;
-      color: #666666;
+      color: #6d4c5b;
+    }
+    .footer a {
+      color: #D04C87;
+      text-decoration: none;
     }
     @media screen and (max-width: 600px) {
       .content, .header, .footer {
-        padding: 15px !important;
+        padding: 20px !important;
       }
       .button {
         padding: 10px 20px !important;
@@ -64,22 +87,25 @@
 <body>
   <div class="container">
     <div class="header">
-      <h2>Nombre de tu empresa</h2>
+    <img src="src/view/img/imagen.png" alt="Logo de la empresa" style="width: 120px; max-height: 60px; height: auto; display: block; margin: 0 auto 15px auto;">
+      <h2>Peques con Estilo</h2>
     </div>
     <div class="content">
-      <h1>Hola [Nombre del cliente],</h1>
+      <h1>Hola '.$datos_usuario->nombres_apellidos.',</h1>
       <p>
-        Te saludamos cordialmente. Queremos informarte sobre nuestras últimas novedades y promociones exclusivas para ti.
+        Hemos recibido una solicitud para cambiar tu contraseña en <strong>Peques con Estilo</strong>.
       </p>
       <p>
-        ¡No te pierdas nuestras ofertas especiales por tiempo limitado!
+        Si no solicitaste este cambio, por favor ignora este correo. Tu contraseña actual seguirá siendo válida.
       </p>
-      <a href="https://www.tusitio.com/promocion" class="button">Ver más</a>
       <p>Gracias por confiar en nosotros.</p>
     </div>
+    <a href="'.BASE_URL.'reset-password/'.$datos_usuario->id.'/'.$token.'" class="button">Cambiar Contraseña</a>
+      <p>Gracias por tu preferencia y confianza en nosotros.</p>
+    </div>
     <div class="footer">
-      © 2025 Nombre de tu empresa. Todos los derechos reservados.<br>
-      <a href="https://www.tusitio.com/desuscribirse">Cancelar suscripción</a>
+      © 2025 Peques con Estilo. Todos los derechos reservados.<br>
+      <a href="'.BASE_URL.'">Cancelar suscripción</a>
     </div>
   </div>
 </body>
