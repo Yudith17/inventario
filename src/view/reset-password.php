@@ -6,30 +6,30 @@
   <title>Actualizar Contraseña</title>
   <style>
      body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', sans-serif;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #333;
-    background: linear-gradient(-45deg, #fbc2eb, #a6c1ee, #fad0c4, #ffdde1);
-    background-size: 400% 400%;
-    animation: animateBackground 15s ease infinite;
-  }
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+      background: linear-gradient(-45deg, #fbc2eb, #a6c1ee, #fad0c4, #ffdde1);
+      background-size: 400% 400%;
+      animation: animateBackground 15s ease infinite;
+    }
 
-  @keyframes animateBackground {
-    0% {
-      background-position: 0% 50%;
+    @keyframes animateBackground {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
     }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
 
     .login-container {
       width: 340px;
@@ -57,8 +57,11 @@
     }
 
     .login-container img {
-      width: 90px;
-      margin-bottom: 10px;
+      width: 300px;
+      max-height: 300px;
+      height: auto;
+      display: block;
+      margin: 0 auto 15px auto;
     }
 
     .login-container input {
@@ -137,19 +140,22 @@
 </head>
 
 <body>
-    <input type="hidden" id="data" value='<?php echo $_GET['data'] ?>'>
-    <input type="hidden" id="data2" value='<?php echo $_GET['data2'] ?>'>
+  <input type="hidden" id="data" value='<?php echo $_GET['data'] ?>'>
+  <input type="hidden" id="data2" value='<?php echo urldecode($_GET['data2']); ?>'>
   <div class="login-container">
-    <h1>Actualizar Contraseña</h1>
-    <img src="https://sispa.iestphuanta.edu.pe/img/logo.png" alt="Logo">
+    <h1>Recuperar Contraseña</h1>
+    <img src="https://img.freepik.com/vector-premium/plantilla-diseno-logotipo-moda-ninos_754499-254.jpg?semt=ais_items_boosted&w=740" alt="Logo">
     <h4>Sistema de Control de Inventario</h4>
     <form id="frm_reset_password">
-      <input type="text" name="dni" id="dni" placeholder="Ingrese su DNI" required />
-      <input type="password" name="password" id="password" placeholder="Nueva contraseña" required />
-      <button type="submit">Actualizar</button>
+      <input type="password" name="password" id="password" placeholder="Nueva Contraseña" required />
+      <input type="password" name="password1" id="password1" placeholder="Confirmar Contraseña" required />
+      <button type="button" onclick="validad_imputs_password();">Actualizar</button>
     </form>
   </div>
 </body>
 <script src="<?php echo BASE_URL; ?>src/view/js/principal.js"></script>
+<script>
+  validar_datos_reset_password();
+</script>
 <script src="<?php echo BASE_URL ?>src/view/pp/plugins/sweetalert2/sweetalert2.min.js"></script>
 </html>

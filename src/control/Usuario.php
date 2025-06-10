@@ -27,7 +27,7 @@ if ($tipo == "validar_datos_reset_password"){
   $id_email = $_POST['id'];
   $token_email = $_POST['token'];
   $arr_Respuesta = array('status'=> false, 'msg' => 'Link Caducado');
-  $datos_usuario = $objUsuario->buscarSesionLoginById($id_email);
+  $datos_usuario = $objUsuario->buscarUsuarioById($id_email);
   if ($datos_usuario->reset_password==1 && password_verify($datos_usuario->token_password,$token_email)) {
     $arr_Respuesta = array('status'=> true, 'msg' => 'ok');
   }
@@ -298,7 +298,7 @@ try {
     <body>
       <div class="container">
         <div class="header">
-        <img src="src/view/img/imagen.png" alt="Logo de la empresa" style="width: 120px; max-height: 60px; height: auto; display: block; margin: 0 auto 15px auto;">
+        <img src="https://img.freepik.com/vector-premium/plantilla-diseno-logotipo-moda-ninos_754499-254.jpg?semt=ais_items_boosted&w=740" alt="Logo" style="width: 300px; max-height: 300px; height: auto; display: block; margin: 0 auto 15px auto;">
           <h2>Peques con Estilo</h2>
         </div>
         <div class="content">
@@ -314,7 +314,7 @@ try {
         </p>
         <p>Gracias por confiar en nosotros.</p>
       </div>
-          <a href="'.BASE_URL.'reset-password?data='.$datos_usuario->id.'&data2='.$token.'" class="button">Cambiar Contraseña</a>
+          <a href="'.BASE_URL. 'reset-password/?data='.$datos_usuario->id.'&data2='.urlencode($token).'" class="button">Cambiar Contraseña</a>
           <p>Gracias por tu preferencia y confianza en nosotros.</p>
         </div>
         <div class="footer">
