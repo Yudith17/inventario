@@ -166,6 +166,37 @@ if ($tipo == "reiniciar_password") {
     }
     echo json_encode($arr_Respuesta);
 }
+
+if ($_GET['action'] == 'resetPassword') {
+  $userId = $_POST['user_id'];
+  $newPassword = $_POST['new_password'];
+
+  $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
+
+  require_once 'UsuarioModel.php';
+  $usuarioModel = new UsuarioModel();
+  $resultado = $usuarioModel->actualizarPassword($userId, $hashedPassword);
+
+  if ($resultado) {
+      // Paso 4: Notificar al usuario por pantalla y/o correo
+      echo "<script>alert('Contraseña restablecida con éxito.'); window.location.href='login.php';</script>";
+
+      // Opcional: notificar por correo
+      $usuario = $usuarioModel->obtenerUsuarioPorId($userId);
+      $email = $usuario['email'];
+      $nombre = $usuario['nombre'];
+
+      $asunto = "Restablecimiento de contraseña exitoso";
+      $mensaje = "Hola $nombre,\n\nTu contraseña fue restablecida correctamente. Si no realizaste este cambio, contacta con soporte.";
+
+      mail($email, $asunto, $mensaje);
+  } else {
+      echo "<script>alert('Error al restablecer la contraseña.'); window.history.back();</script>";
+  }
+}
+
+
+
 if ($tipo == "sent_email_password") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
