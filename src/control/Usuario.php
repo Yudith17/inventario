@@ -1,17 +1,18 @@
 <?php
+
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
+
 session_start();
 require_once('../model/admin-sesionModel.php');
 require_once('../model/admin-usuarioModel.php');
 require_once('../model/adminModel.php');
 
-require '../../vendor/autoload.php';
-
 require '../../vendor/phpmailer/phpmailer/src/Exception.php';
 require '../../vendor/phpmailer/phpmailer/src/PHPMailer.php';
 require '../../vendor/phpmailer/phpmailer/src/SMTP.php';
+
 $tipo = $_GET['tipo'];
 
 //instanciar la clase categoria model
@@ -23,18 +24,58 @@ $objAdmin = new AdminModel();
 $id_sesion = $_POST['sesion'];
 $token = $_POST['token'];
 
-if ($tipo == "validar_datos_reset_password"){
-  $id_email = $_POST['id'];
-  $token_email = $_POST['token'];
-  $arr_Respuesta = array('status'=> false, 'msg' => 'Link Caducado');
-  $datos_usuario = $objUsuario->buscarUsuarioById($id_email);
-  if ($datos_usuario->reset_password==1 && password_verify($datos_usuario->token_password,$token_email)) {
-    $arr_Respuesta = array('status'=> true, 'msg' => 'ok');
-  }
-  echo json_encode($arr_Respuesta);
+if ($tipo == "validar_datos_reset_password") {
+    $id_email = $_POST['id'];
+    $token_email = $_POST['token'];
+
+    $arr_Respuesta = array('status' => false, 'msg' => 'link caducado');
+    $datos_usuario = $objUsuario->buscarUsuarioById($id_email);
+
+    if ($datos_usuario && $datos_usuario->reset_password == 1 && password_verify($datos_usuario->token_password, $token_email)) {
+        $arr_Respuesta = array('status' => true, 'msg' => 'Ok');
+    }
+    
+    echo json_encode($arr_Respuesta);
 }
 
+if ($tipo == "actualizar_password_reset") {
+    $id_usuario = $_POST['id'];
+    $nueva_password = $_POST['password'];
+    $token_email = $_POST['token'];
+    
+    $arr_Respuesta = array('status' => false, 'msg' => 'Error al actualizar contraseña');
+    
+    // Verificar que el usuario existe y el token es válido
+    $datos_usuario = $objUsuario->buscarUsuarioById($id_usuario);
+    
+    if ($datos_usuario && $datos_usuario->reset_password == 1 && password_verify($datos_usuario->token_password, $token_email)) {
+        // Actualizar contraseña y limpiar datos de reset
+        $resultado = $objUsuario->actualizarPasswordYLimpiarReset($id_usuario, $nueva_password);
+        
+        if ($resultado) {
+            $arr_Respuesta = array(
+                'status' => true, 
+                'msg' => 'Contraseña actualizada correctamente'
+            );
+        } else {
+            $arr_Respuesta = array(
+                'status' => false, 
+                'msg' => 'Error al guardar en la base de datos'
+            );
+        }
+    } else {
+        $arr_Respuesta = array(
+            'status' => false, 
+            'msg' => 'Token inválido o expirado'
+        );
+    }
+    
+    echo json_encode($arr_Respuesta);
+}
+
+
 if ($tipo == "listar_usuarios_ordenados_tabla") {
+
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
         //print_r($_POST);
@@ -71,40 +112,41 @@ if ($tipo == "listar_usuarios_ordenados_tabla") {
     }
     echo json_encode($arr_Respuesta);
 }
-if ($tipo == "registrar") {
+
+
+
+ if ($tipo == "registrar") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {
+        //print_r($_POST);
+        //repuesta
         if ($_POST) {
             $dni = $_POST['dni'];
-            $apellidos_nombres = $_POST['apellidos_nombres']; 
+            $apellidos_nombres = $_POST['apellidos_nombres'];
             $correo = $_POST['correo'];
             $telefono = $_POST['telefono'];
-            $password = $_POST['password']; // Nuevo campo
+            $password = $_POST['password'];
 
-            // Validar campos
             if ($dni == "" || $apellidos_nombres == "" || $correo == "" || $telefono == "" || $password == "") {
+                //repuesta
                 $arr_Respuesta = array('status' => false, 'mensaje' => 'Error, campos vacíos');
             } else {
                 $arr_Usuario = $objUsuario->buscarUsuarioByDni($dni);
                 if ($arr_Usuario) {
                     $arr_Respuesta = array('status' => false, 'mensaje' => 'Registro Fallido, Usuario ya se encuentra registrado');
                 } else {
-                    // Encriptar la contraseña
-                    $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-                    // Registrar usuario con contraseña encriptada
-                    $id_usuario = $objUsuario->registrarUsuario($dni, $apellidos_nombres, $correo, $telefono, $passwordHash);
-                    
+                    $id_usuario = $objUsuario->registrarUsuario($dni, $apellidos_nombres, $correo, $telefono, $password);
                     if ($id_usuario > 0) {
+                        // array con los id de los sistemas al que tendra el acceso con su rol registrado
+                        // caso de administrador y director
                         $arr_Respuesta = array('status' => true, 'mensaje' => 'Registro Exitoso');
                     } else {
-                        $arr_Respuesta = array('status' => false, 'mensaje' => 'Error al registrar usuario');
+                        $arr_Respuesta = array('status' => false, 'mensaje' => 'Error al registrar producto');
                     }
                 }
             }
         }
     }
-    
     echo json_encode($arr_Respuesta);
 }
 
@@ -166,6 +208,7 @@ if ($tipo == "reiniciar_password") {
     }
     echo json_encode($arr_Respuesta);
 }
+
 if ($tipo == "sent_email_password") {
     $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
     if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {

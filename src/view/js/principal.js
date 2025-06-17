@@ -165,73 +165,141 @@ function cargar_sede_filtro(sedes) {
     document.getElementById('busqueda_tabla_sede').innerHTML = lista_sede;
 }
 
-
-
 // ------------------------------------------- FIN DE DATOS DE CARGA PARA FILTRO DE BUSQUEDA -----------------------------------------------
-async function validar_datos_reset_password(){
+async function validar_datos_reset_password(params) {
     let id = document.getElementById('data').value;
     let token = document.getElementById('data2').value;
     const formData = new FormData();
     formData.append('id', id);
     formData.append('token', token);
     formData.append('sesion', '');
+    
     try {
-        let respuesta = await fetch(base_url_server + 'src/control/usuario.php?tipo=validar_datos_reset_password', {
+        let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=validar_datos_reset_password', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
             body: formData
         });
         let json = await respuesta.json();
+        
         if (json.status == false) {
             Swal.fire({
                 type: 'error',
                 title: 'Error de Link',
-                text: "Link Caducado, Verifique su correo",
+                text: "Link caducado, verifique su correo",
                 confirmButtonClass: 'btn btn-confirm mt-2',
                 footer: '',
                 timer: 1000
             });
-            let formulario = document.getElementById('frm_reset_password');
-            formulario.innerHTML=`volver a enviar`;
-            //location.replace(base_url + "login");
+            // Opcional: redirigir al login después de un tiempo
+            setTimeout(() => {
+                location.replace(base_url + "login");
+            }, 1500);
         }
-        //console.log(respuesta);
     } catch (e) {
         console.log("Error al validar datos" + e);
     }
 }
 
-function validad_imputs_password(){
+function validar_imputs_password() {
     let pass1 = document.getElementById('password').value;
     let pass2 = document.getElementById('password1').value;
+    
     if (pass1 !== pass2) {
         Swal.fire({
             type: 'error',
             title: 'Error',
-            text: "Contraseñas no Coinciden",
+            text: "Contraseña no coincide",
             footer: '',
             timer: 1500
-        }); 
+        });
         return;
     }
-    if (pass1.length<8 && pass2.length<8) {
+    
+    if (pass1.length < 8 && pass2.length < 8) {
         Swal.fire({
             type: 'error',
             title: 'Error',
-            text: "La Contraseña tiene que ser minimo 8 caracteres",
+            text: "La contraseña tiene que tener 8 caracteres",
             footer: '',
             timer: 1500
-        }); 
+        });
         return;
-    }else{
+    } else {
         actualizar_password();
     }
 }
 
-async function actualizar_password(){
-    //enviar informacion de password y id al controlador usuario
-    //recibir informacion y encriptar la nueva contraseña
-    //guardar en base de datos y actualizar campo de reset_password= 0 y token_password = ''
-    //notificar a usuario sobre el estado del proceso
+async function actualizar_password() {
+    // Obtener los datos necesarios
+    let id = document.getElementById('data').value;
+    let token = document.getElementById('data2').value;
+    let nueva_password = document.getElementById('password').value;
+    
+    // Crear FormData con la información
+    const formData = new FormData();
+    formData.append('id', id);
+    formData.append('token', token);
+    formData.append('password', nueva_password);
+    formData.append('sesion', '');
+    
+    try {
+        // Mostrar loading
+        Swal.fire({
+            title: 'Actualizando...',
+            text: 'Por favor espere',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        
+        // Enviar datos al controlador
+        let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=actualizar_password_reset', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            body: formData
+        });
+        
+        let json = await respuesta.json();
+        
+        if (json.status == true) {
+            // Éxito - contraseña actualizada
+            Swal.fire({
+                type: 'success',
+                title: 'Éxito',
+                text: json.msg,
+                confirmButtonClass: 'btn btn-confirm mt-2',
+                footer: '',
+                timer: 2000
+            }).then(() => {
+                // Redirigir al login después del éxito
+                location.replace(base_url + "login");
+            });
+        } else {
+            // Error al actualizar
+            Swal.fire({
+                type: 'error',
+                title: 'Error',
+                text: json.msg,
+                confirmButtonClass: 'btn btn-confirm mt-2',
+                footer: '',
+                timer: 2000
+            });
+        }
+        
+    } catch (error) {
+        console.log("Error al actualizar contraseña: " + error);
+        Swal.fire({
+            type: 'error',
+            title: 'Error',
+            text: 'Error de conexión. Intente nuevamente.',
+            confirmButtonClass: 'btn btn-confirm mt-2',
+            footer: '',
+            timer: 2000
+        });
+    }
 }
