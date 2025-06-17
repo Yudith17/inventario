@@ -37,6 +37,7 @@ class UsuarioModel
         return $sql;
     }
     
+    
     // Nuevo método para actualizar contraseña y limpiar datos de reset
     public function actualizarPasswordYLimpiarReset($id, $password)
     {
@@ -49,16 +50,7 @@ class UsuarioModel
          $sql = $this->conexion->query("UPDATE usuarios SET token_password ='$token', reset_password='$estado' WHERE id='$id'");
         return $sql;
     }
-    public function actualizarPassword($id, $hashedPassword) {
-        $conexion = $this->conectar(); // Asume que tienes un método de conexión
-    
-        $sql = "UPDATE usuarios 
-                SET password = ?, reset_password = 0, token_password = '' 
-                WHERE id = ?";
-        $stmt = $conexion->prepare($sql);
-        return $stmt->execute([$hashedPassword, $id]);
-    }
-    
+   
 
     public function buscarUsuarioById($id)
     {
