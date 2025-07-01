@@ -220,6 +220,7 @@ if ($tipo == "buscar_movimiento_id") {
         foreach ($arrDetalle  as $bien) {
             $id_bien = $bien->id_bien;
             $res_bien = $objBien->buscarBienById($id_bien);
+    
         }
         $arr_Respuesta['movimiento'] = $arrMovimiento;
         $arr_Respuesta['amb_origen'] = $arrAmbOrigen;
