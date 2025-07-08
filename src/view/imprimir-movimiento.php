@@ -29,9 +29,8 @@ if (!isset($ruta[1])|| $ruta[1]=="") {
  } else {
      $respuesta =json_decode($response);
      //print_r($respuesta);
-     
-     ?>
-<!---
+     $contenido_pdf = '';
+     $contenido_pdf .='
      <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -93,42 +92,43 @@ if (!isset($ruta[1])|| $ruta[1]=="") {
   <div class="info">
     <p><b>ENTIDAD</b>: <span class="underline">DIRECCION REGIONAL DE EDUCACION - AYACUCHO</span></p>
     <p><b>AREA</b>: <span class="underline">OFICINA DE ADMINISTRACIÓN</span></p>
-    <p><b>ORIGEN</b>: <span class="underline"><?php echo $respuesta->amb_origen->codigo. '-' . $respuesta->amb_origen->detalle?></span></p>
-    <p><b>DESTINO</b>: <span class="underline"><?php echo $respuesta->amb_destino->codigo. '-' .$respuesta->amb_destino->detalle?></span></p>
-    <p><b>MOTIVO (*)</b>: <span class="underline"><?php echo $respuesta->movimiento->descripcion?></span></p>
+    <p><b>ORIGEN</b>: <span class="underline">'. $respuesta->amb_origen->codigo.' - '. $respuesta->amb_origen->detalle.'</span></p>
+    <p><b>DESTINO</b>: <span class="underline">'.$respuesta->amb_destino->codigo.' - '.$respuesta->amb_destino->detalle.'</span></p>
+    <p><b>MOTIVO (*)</b>: <span class="underline">'.$respuesta->movimiento->descripcion.'</span></p>
   </div>
 
   <table>
-  <tr>
-    <th>ITEM</th>
-    <th>CODIGO PATRIMONIAL</th>
-    <th>NOMBRE DEL BIEN</th>
-    <th>MARCA</th>
-    <th>COLOR</th>
-    <th>MODELO</th>
-    <th>ESTADO</th>
-  </tr>
+    <thead>
+      <tr>
+        <th>ITEM</th>
+        <th>CODIGO PATRIMONIAL</th>
+        <th>NOMBRE DEL BIEN</th>
+        <th>MARCA</th>
+        <th>COLOR</th>
+        <th>MODELO</th>
+        <th>ESTADO</th>
+      </tr>
+    </thead>
   <tbody>
 
+     ';
+     ?>
+     
   <?php
   $contador = 1;
   foreach ($respuesta->bienes as $bien) {
-      echo "<tr>";
-      echo "<td>" . $contador++ . "</td>";
-      echo "<td>" . $bien->cod_patrimonial . "</td>";
-      echo "<td>" . $bien->denominacion . "</td>";
-      echo "<td>" . $bien->marca . "</td>";
-      echo "<td>" . $bien->color . "</td>";
-      echo "<td>" . $bien->modelo . "</td>";
-      echo "<td>" . $bien->estado_conservacion . "</td>";
-      echo "</tr>";
+     $contenido_pdf.= '<tr>';
+      $contenido_pdf.= '<td>' . $contador . '</td>';
+      $contenido_pdf.= '<td>' . $bien->cod_patrimonial . '</td>';
+      $contenido_pdf.= '<td>' . $bien->denominacion . '</td>';
+      $contenido_pdf.= '<td>' . $bien->marca . '</td>';
+      $contenido_pdf.= '<td>' . $bien->color . '</td>';
+      $contenido_pdf.= '<td>' . $bien->modelo . '</td>';
+      $contenido_pdf.= '<td>' . $bien->estado_conservacion . '</td>';
+      $contenido_pdf.= '</tr>';
+      $contador++;
   }
-  ?>
-  </tbody>
-</table>
-
-
-<?php
+ 
 $fecha = new DateTime(); // new DateTime('2025-07-08') si deseas una fija
 
 $dia = $fecha->format('j'); // día sin cero a la izquierda
@@ -143,13 +143,13 @@ $meses = [
 
 // Año fijo: 2025
 $año = '2025';
-?>
 
-<div class="lugar-fecha">
-  <p><span class="underline">Ayacucho</span>, <?php echo $dia . ' de ' . $meses[$mesNumero] . ' del ' . $año; ?></p>
+  $contenido_pdf .='
+  </tbody>
+  </table>
+  <div class="lugar-fecha">
+  <p><span class="underline">Ayacucho</span>, '. $dia . ' de ' . $meses[$mesNumero] . ' del ' . $año.'</p>
 </div>
-
-
   <div class="firmas">
     <div>
       <p>-----------------------------</p>
@@ -163,7 +163,10 @@ $año = '2025';
 
 </body>
 </html>
--->
+  ';
+    ?>
+  
+
      <?php
      require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 
@@ -172,14 +175,23 @@ $año = '2025';
 $pdf->SetCreator(PDF_CREATOR);
 $pdf->SetAuthor('Yudith Rimachi');
 $pdf->SetTitle('Reporte de Movimientos');
-// set margins
+// establecer márgenes
 $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
 
 // salto de pagina automatico
 $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
-// set font
-$pdf->SetFont('dejavusans', '', 10);
+// establecer fuente
+$pdf->SetFont('helvetica', 'B', 12);
+
+// agregar una pagina
+$pdf->AddPage();
+
+// generar el contenido HTML
+$pdf->writeHTML($contenido_pdf);
+ob_clean();
+// Cerrar y generar documento PDF
+$pdf->Output('example_006.pdf', 'I');
 
  }
 
