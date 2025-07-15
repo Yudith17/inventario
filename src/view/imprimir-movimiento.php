@@ -50,7 +50,7 @@ if (!isset($ruta[1])|| $ruta[1]=="") {
     }
     .info p {
       margin: 5px 0;
-    }yt
+    }
     .info b {
       display: inline-block;
       width: 100px;
@@ -112,9 +112,7 @@ if (!isset($ruta[1])|| $ruta[1]=="") {
   <tbody>
 
      ';
-     ?>
      
-  <?php
   $contador = 1;
   foreach ($respuesta->bienes as $bien) {
      $contenido_pdf.= '<tr>';
@@ -164,34 +162,165 @@ $año = '2025';
 </body>
 </html>
   ';
-    ?>
-  
 
-     <?php
-     require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
+  require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 
-     $pdf = new TCPDF();
-     // establecer información del documento
-$pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Yudith Rimachi');
-$pdf->SetTitle('Reporte de Movimientos');
-// establecer márgenes
-$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+// Clase personalizada para agregar encabezado y pie de página
+class MYPDF extends TCPDF {
+    
+  // URLs de los logos
+  private $logo_left_url = 'https://www.iestphuanta.edu.pe/sacademica/img/logo1.png'; 
+  private $logo_right_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVdxkNoyHgePcrwP7lKmpMspDuWsHoF0D9Ww&s';
 
-// salto de pagina automatico
-$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+  public function setLogoUrls($left_url, $right_url = null) {
+      $this->logo_left_url = $left_url;
+      if ($right_url !== null) {
+          $this->logo_right_url = $right_url;
+      }
+  }
 
-// establecer fuente
-$pdf->SetFont('helvetica', 'B', 12);
+  public function setLeftLogoUrl($url) {
+      $this->logo_left_url = $url;
+  }
 
-// agregar una pagina
-$pdf->AddPage();
+  public function setRightLogoUrl($url) {
+      $this->logo_right_url = $url;
+  }
 
-// generar el contenido HTML
-$pdf->writeHTML($contenido_pdf);
-ob_clean();
-// Cerrar y generar documento PDF
-$pdf->Output('example_006.pdf', 'I');
+  public function Header() {
+      $logo_left_url = $this->logo_left_url;
+      $logo_right_url = $this->logo_right_url;
 
+      function checkUrlExists($url) {
+          if (empty($url)) return false;
+          if (!filter_var($url, FILTER_VALIDATE_URL)) return false;
+          $headers = @get_headers($url);
+          return $headers && strpos($headers[0], '200') !== false;
+      }
+
+      $logo_left = checkUrlExists($logo_left_url) ? $logo_left_url : null;
+      $logo_right = checkUrlExists($logo_right_url) ? $logo_right_url : null;
+
+      $this->SetY(6); // Altura inicial de los logos
+
+      // Logo izquierdo
+      if ($logo_left) {
+          $this->Image($logo_left, 15, 6, 18); // Y = 6, width = 18
+      } else {
+          $this->SetFillColor(52, 152, 219);
+          $this->Circle(24, 16, 9, 0, 360, 'F');
+          $this->SetFont('helvetica', 'B', 14);
+          $this->SetTextColor(255, 255, 255);
+          $this->SetXY(20, 12);
+          $this->Cell(8, 8, 'I', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+      }
+
+      // Logo derecho
+      if ($logo_right) {
+          $this->Image($logo_right, 177, 6, 18); // Y = 6, width = 18
+      } else {
+          $this->SetFillColor(39, 174, 96);
+          $this->Circle(186, 16, 9, 0, 360, 'F');
+          $this->SetFont('helvetica', 'B', 14);
+          $this->SetTextColor(255, 255, 255);
+          $this->SetXY(182, 12);
+          $this->Cell(8, 8, 'M', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+      }
+
+      // Título central - bajado para que no choque con los logos
+      $this->SetTextColor(0, 0, 0);
+      $this->SetFont('helvetica', 'B', 13);
+      $this->SetY(28); // Bajado para que no tape las imágenes
+      $this->Cell(0, 6, 'INSTITUTO DE EDUCACIÓN SUPERIOR TECNOLÓGICO PÚBLICO "HUANTA"', 0, 1, 'C');
+
+      $this->SetFont('helvetica', 'B', 12);
+      $this->Cell(0, 6, 'DIRECCIÓN REGIONAL DE EDUCACIÓN AYACUCHO - DREA', 0, 1, 'C');
+
+      $this->SetFont('helvetica', '', 10);
+      $this->Cell(0, 5, 'ÁREA DE ADMINISTRACIÓN Y SERVICIOS GENERALES', 0, 1, 'C');
+      $this->Ln(3);
+
+      // Líneas decorativas
+      $this->SetLineWidth(0.8);
+      $this->SetDrawColor(52, 152, 219);
+      $this->Line(15, 50, 70, 50);
+
+      $this->SetDrawColor(231, 76, 60);
+      $this->Line(70, 50, 125, 50);
+
+      $this->SetDrawColor(46, 204, 113);
+      $this->Line(125, 50, 180, 50);
+
+      $this->SetDrawColor(241, 196, 15);
+      $this->Line(180, 50, 195, 50);
+
+      $this->SetLineWidth(0.2);
+      $this->SetDrawColor(0, 0, 0);
+      $this->Ln(5);
+  }
+
+  public function Footer() {
+      $this->SetY(-20);
+      $this->SetLineWidth(0.5);
+      $this->SetDrawColor(52, 73, 94);
+      $this->Line(15, $this->GetY(), 195, $this->GetY());
+      $this->Ln(3);
+
+      $this->SetFont('helvetica', '', 8);
+      $this->SetTextColor(70, 70, 70);
+      $this->Cell(0, 4, 'IESTP Huanta - Jr. Manco Cápac S/N, Huanta - Ayacucho', 0, 1, 'C');
+      $this->Cell(0, 4, 'Teléfono: (066) 322296 | Email: contactos@iestphuanta.edu.pe | Web: https://iestphuanta.edu.pe/', 0, 1, 'C');
+
+  }
+
+  public function AddSectionLabel($text) {
+      $this->Ln(5);
+      $this->SetFillColor(52, 73, 94);
+      $this->SetTextColor(255, 255, 255);
+      $this->SetFont('helvetica', 'B', 12);
+      $text_width = $this->GetStringWidth($text) + 10;
+      $x = (210 - $text_width) / 2;
+      $this->RoundedRect($x, $this->GetY(), $text_width, 8, 2, '1111', 'F');
+      $this->SetXY($x, $this->GetY() + 1);
+      $this->Cell($text_width, 6, $text, 0, false, 'C', 0, '', 0, false, 'M', 'M');
+      $this->SetTextColor(0, 0, 0);
+      $this->SetFillColor(255, 255, 255);
+      $this->Ln(12);
+  }
+}
+
+
+     // Crear nuevo PDF con la clase personalizada
+     $pdf = new MYPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+     
+     // Establecer información del documento
+     $pdf->SetCreator(PDF_CREATOR);
+     $pdf->SetAuthor('Yudith Rimachi');
+     $pdf->SetTitle('Papeleta de Rotación de Bienes');
+     $pdf->SetSubject('Reporte de Movimientos');
+     $pdf->SetKeywords('PDF, movimientos, bienes, patrimonio');
+     
+     // Establecer márgenes (aumentados para dar espacio al encabezado y pie)
+     $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT); // Margen superior aumentado para el logo
+     $pdf->SetHeaderMargin(5);
+     $pdf->SetFooterMargin(10);
+     
+     // Salto de página automático
+     $pdf->SetAutoPageBreak(TRUE, 25); // Margen inferior aumentado para el pie
+     
+     // Establecer fuente
+     $pdf->SetFont('helvetica', '', 10);
+     
+     // Agregar una página
+     $pdf->AddPage();
+     
+     // Generar el contenido HTML
+     $pdf->writeHTML($contenido_pdf);
+     
+     // Limpiar buffer
+     ob_clean();
+     
+     // Cerrar y generar documento PDF
+     $pdf->Output('papeleta_rotacion_bienes.pdf', 'I');
  }
-
+?>
