@@ -168,8 +168,7 @@ $año = '2025';
 // Clase personalizada para agregar encabezado y pie de página
 class MYPDF extends TCPDF {
     
-  // URLs de los logos
-  private $logo_left_url = 'https://www.iestphuanta.edu.pe/sacademica/img/logo1.png'; 
+  private $logo_left_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnRyplBMCnfQAKteOxoWIf4nQsLmsdxvts2Q&s'; 
   private $logo_right_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVdxkNoyHgePcrwP7lKmpMspDuWsHoF0D9Ww&s';
 
   public function setLogoUrls($left_url, $right_url = null) {
@@ -203,56 +202,57 @@ class MYPDF extends TCPDF {
 
       $this->SetY(6); // Altura inicial de los logos
 
-      // Logo izquierdo
+      // Logo izquierdo (más grande)
       if ($logo_left) {
-          $this->Image($logo_left, 15, 6, 18); // Y = 6, width = 18
+          $this->Image($logo_left, 15, 6, 25); // width = 25
       } else {
           $this->SetFillColor(52, 152, 219);
-          $this->Circle(24, 16, 9, 0, 360, 'F');
-          $this->SetFont('helvetica', 'B', 14);
+          $this->Circle(26.5, 16, 12, 0, 360, 'F'); // centro ajustado
+          $this->SetFont('helvetica', 'B', 16);
           $this->SetTextColor(255, 255, 255);
-          $this->SetXY(20, 12);
-          $this->Cell(8, 8, 'I', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+          $this->SetXY(21.5, 12);
+          $this->Cell(10, 10, 'I', 0, false, 'C', 0, '', 0, false, 'M', 'M');
       }
 
-      // Logo derecho
+      // Logo derecho (más grande)
       if ($logo_right) {
-          $this->Image($logo_right, 177, 6, 18); // Y = 6, width = 18
+          $this->Image($logo_right, 170, 6, 25); // width = 25
       } else {
           $this->SetFillColor(39, 174, 96);
-          $this->Circle(186, 16, 9, 0, 360, 'F');
-          $this->SetFont('helvetica', 'B', 14);
+          $this->Circle(183.5, 16, 12, 0, 360, 'F');
+          $this->SetFont('helvetica', 'B', 16);
           $this->SetTextColor(255, 255, 255);
-          $this->SetXY(182, 12);
-          $this->Cell(8, 8, 'M', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+          $this->SetXY(178.5, 12);
+          $this->Cell(10, 10, 'M', 0, false, 'C', 0, '', 0, false, 'M', 'M');
       }
 
-      // Título central - bajado para que no choque con los logos
+      // Títulos más arriba
       $this->SetTextColor(0, 0, 0);
       $this->SetFont('helvetica', 'B', 13);
-      $this->SetY(28); // Bajado para que no tape las imágenes
-      $this->Cell(0, 6, 'INSTITUTO DE EDUCACIÓN SUPERIOR TECNOLÓGICO PÚBLICO "HUANTA"', 0, 1, 'C');
+      $this->SetY(22); // antes era 28
+      $this->Cell(0, 6, 'GOBIERNO REGIONAL DE AYACUCHO', 0, 1, 'C');
 
       $this->SetFont('helvetica', 'B', 12);
-      $this->Cell(0, 6, 'DIRECCIÓN REGIONAL DE EDUCACIÓN AYACUCHO - DREA', 0, 1, 'C');
+      $this->Cell(0, 6, 'DIRECCIÓN REGIONAL DE EDUCACIÓN DE AYACUCHO', 0, 1, 'C');
 
       $this->SetFont('helvetica', '', 10);
-      $this->Cell(0, 5, 'ÁREA DE ADMINISTRACIÓN Y SERVICIOS GENERALES', 0, 1, 'C');
-      $this->Ln(3);
+      $this->Cell(0, 5, 'DIRECCION DE ADMINISTRACION', 0, 1, 'C');
+
+      $this->Ln(2); // más pequeño el espacio
 
       // Líneas decorativas
       $this->SetLineWidth(0.8);
       $this->SetDrawColor(52, 152, 219);
-      $this->Line(15, 50, 70, 50);
+      $this->Line(15, 45, 70, 45); // subido de 50 a 45
 
       $this->SetDrawColor(231, 76, 60);
-      $this->Line(70, 50, 125, 50);
+      $this->Line(70, 45, 125, 45);
 
       $this->SetDrawColor(46, 204, 113);
-      $this->Line(125, 50, 180, 50);
+      $this->Line(125, 45, 180, 45);
 
       $this->SetDrawColor(241, 196, 15);
-      $this->Line(180, 50, 195, 50);
+      $this->Line(180, 45, 195, 45);
 
       $this->SetLineWidth(0.2);
       $this->SetDrawColor(0, 0, 0);
@@ -268,9 +268,8 @@ class MYPDF extends TCPDF {
 
       $this->SetFont('helvetica', '', 8);
       $this->SetTextColor(70, 70, 70);
-      $this->Cell(0, 4, 'IESTP Huanta - Jr. Manco Cápac S/N, Huanta - Ayacucho', 0, 1, 'C');
-      $this->Cell(0, 4, 'Teléfono: (066) 322296 | Email: contactos@iestphuanta.edu.pe | Web: https://iestphuanta.edu.pe/', 0, 1, 'C');
-
+      $this->Cell(0, 4, 'Jr. 28 de Julio Nº 383 – Huamanga', 0, 1, 'C');
+      $this->Cell(0, 4, 'Teléfono: (066) 31-2364 | www.dreaya.gob.pe', 0, 1, 'C');
   }
 
   public function AddSectionLabel($text) {
@@ -288,6 +287,7 @@ class MYPDF extends TCPDF {
       $this->Ln(12);
   }
 }
+
 
 
      // Crear nuevo PDF con la clase personalizada
