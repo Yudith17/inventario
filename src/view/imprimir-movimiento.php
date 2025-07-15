@@ -50,7 +50,7 @@ if (!isset($ruta[1])|| $ruta[1]=="") {
     }
     .info p {
       margin: 5px 0;
-    }
+    }yt
     .info b {
       display: inline-block;
       width: 100px;
@@ -157,7 +157,7 @@ $año = '2025';
     </div>
     <div>
       <p>-----------------------------</p>
-      <p>RECIBI CONFORME</p>
+      <p>RECIBÍ CONFORME</p>
     </div>
   </div>
 
