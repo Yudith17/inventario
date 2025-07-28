@@ -331,7 +331,7 @@ class MYPDF extends TCPDF {
 $pdf = new MYPDF();
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Marycielo');
+$pdf->SetAuthor('Yudith');
 $pdf->SetTitle('Reporte de bienes');
 
 // 10. CONFIGURAR MÁRGENES Y PÁGINA

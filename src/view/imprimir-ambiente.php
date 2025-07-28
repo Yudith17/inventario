@@ -278,8 +278,8 @@ class MYPDF extends TCPDF {
 $pdf = new MYPDF();
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Marycielo');
-$pdf->SetTitle('Reporte de bienes');
+$pdf->SetAuthor('Yudith');
+$pdf->SetTitle('Reporte de ambiente');
 
 // 10. CONFIGURAR MÁRGENES Y PÁGINA
 $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT); 
@@ -303,28 +303,3 @@ $pdf->writeHTML($contenido_pdf, true, false, true, false, '');
 // Generar archivo PDF con nombre único (incluye fecha y hora)
 $pdf->Output('reporte_bienes_' . date('Ymd_His') . '.pdf', 'I');
     }
-[5:50 p.m., 27/7/2025] Marycielo: if($tipo == "listarTodosAmbientes"){
-    $arr_Respuesta = array('status' => false, 'msg' => 'Error_Sesion');
-  if ($objSesion->verificar_sesion_si_activa($id_sesion, $token)) {  
-      $arr_Respuesta = array('status' => false, 'contenido' => '');
-      $resAmbiente = $objAmbiente->listarAmbientes();
-      $arr_contenido = [];
-      if (!empty($resAmbiente)) {
-          
-          for ($i = 0; $i < count($resAmbiente); $i++) {
-              $institucion = $objInstitucion->buscarInstitucionById($resAmbiente[$i]->id_ies);
-              $arr_contenido[$i] = (object) [];
-              $arr_contenido[$i]->institucion = $institucion->nombre;
-              $arr_contenido[$i]->id = $resAmbiente[$i]->id;
-              $arr_contenido[$i]->encargado = $resAmbiente[$i]->encargado;
-              $arr_contenido[$i]->codigo = $resAmbiente[$i]->codigo;
-              $arr_contenido[$i]->detalle = $resAmbiente[$i]->detalle;
-              $arr_contenido[$i]->otros_detalle = $resAmbiente[$i]->otros_detalle;
-
-          }
-          $arr_Respuesta['status'] = true;
-          $arr_Respuesta['contenido'] = $arr_contenido;
-      }
-  }
-  echo json_encode($arr_Respuesta);
-}

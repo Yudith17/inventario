@@ -295,7 +295,7 @@ class MYPDF extends TCPDF {
      
      // Establecer información del documento
      $pdf->SetCreator(PDF_CREATOR);
-     $pdf->SetAuthor('Yudith Rimachi');
+     $pdf->SetAuthor('Yudith');
      $pdf->SetTitle('Papeleta de Rotación de Bienes');
      $pdf->SetSubject('Reporte de Movimientos');
      $pdf->SetKeywords('PDF, movimientos, bienes, patrimonio');
