@@ -149,67 +149,129 @@ Ayacucho, '. $dia . " de " . $meses[$mesNumero] . " del " . $año.'
 
 
    
-require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
+  require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 
-// 8. CREAR CLASE PERSONALIZADA PARA ENCABEZADO Y PIE DE PÁGINA
+// Clase personalizada para agregar encabezado y pie de página
 class MYPDF extends TCPDF {
-    public function Header() {
-        // URL de las imágenes
-        $logo_left  = 'https://iestphuanta.edu.pe/wp-content/uploads/2021/12/logo_tecno-1-2.png';
-        $logo_right = 'https://dreayacucho.gob.pe/storage/directory/lCcjIpyYl7E5tQjWegZVLZvp1ZIMbY-metaWk9PRUEybXNRUGlYWWtKRng0SkxqcG9SRW5jTEZuLW1ldGFiRzluYnk1d2JtYz0tLndlYnA=-.webp';
+    
+  private $logo_left_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnRyplBMCnfQAKteOxoWIf4nQsLmsdxvts2Q&s'; 
+  private $logo_right_url = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVdxkNoyHgePcrwP7lKmpMspDuWsHoF0D9Ww&s';
 
-        // Logo izquierdo
-        $this->Image($logo_left, 15, 10, 25);  
-        // Logo derecho
-        $this->Image($logo_right, 170, 10, 25); 
+  public function setLogoUrls($left_url, $right_url = null) {
+      $this->logo_left_url = $left_url;
+      if ($right_url !== null) {
+          $this->logo_right_url = $right_url;
+      }
+  }
 
-        // Título principal 
-        $this->SetXY(55, 12); // desplazado al centro 
-        $this->SetFont('helvetica', 'B', 11);
-        $this->SetTextColor(0, 70, 140); // Azul fuerte
-        $this->Cell(100, 6, 'INSTITUTO DE EDUCACIÓN SUPERIOR TECNOLÓGICO PÚBLICO', 0, 1, 'C');
+  public function setLeftLogoUrl($url) {
+      $this->logo_left_url = $url;
+  }
 
-        // Subtítulo
-        $this->SetX(55);
-        $this->SetFont('helvetica', 'B', 11);
-        $this->SetTextColor(0, 70, 140); // Gris oscuro
-        $this->Cell(100, 6, '"HUANTA"', 0, 1, 'C');
+  public function setRightLogoUrl($url) {
+      $this->logo_right_url = $url;
+  }
 
-         // contenido
-        $this->SetX(55, 12);
-        $this->SetFont('helvetica', 'I', 10);
-        $this->SetTextColor(85, 85, 85); // Gris oscuro
-        $this->Cell(100, 6, 'Sistema de Control Patrimonial', 0, 1, 'C');
+  public function Header() {
+      $logo_left_url = $this->logo_left_url;
+      $logo_right_url = $this->logo_right_url;
 
-        // Línea decorativa azul
-        $this->SetDrawColor(52, 152, 219);
-        $this->SetLineWidth(0.8);
-        $this->Line(15, 44, 195, 44);
+      function checkUrlExists($url) {
+          if (empty($url)) return false;
+          if (!filter_var($url, FILTER_VALIDATE_URL)) return false;
+          $headers = @get_headers($url);
+          return $headers && strpos($headers[0], '200') !== false;
+      }
 
-        $this->Ln(5); // Espacio adicional
-    }
+      $logo_left = checkUrlExists($logo_left_url) ? $logo_left_url : null;
+      $logo_right = checkUrlExists($logo_right_url) ? $logo_right_url : null;
+
+      $this->SetY(6); // Altura inicial de los logos
+
+      // Logo izquierdo (más grande)
+      if ($logo_left) {
+          $this->Image($logo_left, 15, 6, 25); // width = 25
+      } else {
+          $this->SetFillColor(52, 152, 219);
+          $this->Circle(26.5, 16, 12, 0, 360, 'F'); // centro ajustado
+          $this->SetFont('helvetica', 'B', 16);
+          $this->SetTextColor(255, 255, 255);
+          $this->SetXY(21.5, 12);
+          $this->Cell(10, 10, 'I', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+      }
+
+      // Logo derecho (más grande)
+      if ($logo_right) {
+          $this->Image($logo_right, 170, 6, 25); // width = 25
+      } else {
+          $this->SetFillColor(39, 174, 96);
+          $this->Circle(183.5, 16, 12, 0, 360, 'F');
+          $this->SetFont('helvetica', 'B', 16);
+          $this->SetTextColor(255, 255, 255);
+          $this->SetXY(178.5, 12);
+          $this->Cell(10, 10, 'M', 0, false, 'C', 0, '', 0, false, 'M', 'M');
+      }
+
+      // Títulos más arriba
+      $this->SetTextColor(0, 0, 0);
+      $this->SetFont('helvetica', 'B', 13);
+      $this->SetY(22); // antes era 28
+      $this->Cell(0, 6, 'GOBIERNO REGIONAL DE AYACUCHO', 0, 1, 'C');
+
+      $this->SetFont('helvetica', 'B', 12);
+      $this->Cell(0, 6, 'DIRECCIÓN REGIONAL DE EDUCACIÓN DE AYACUCHO', 0, 1, 'C');
+
+      $this->SetFont('helvetica', '', 10);
+      $this->Cell(0, 5, 'DIRECCION DE ADMINISTRACION', 0, 1, 'C');
+
+      $this->Ln(2); // más pequeño el espacio
+
+      // Líneas decorativas
+      $this->SetLineWidth(0.8);
+      $this->SetDrawColor(52, 152, 219);
+      $this->Line(15, 45, 70, 45); // subido de 50 a 45
+
+      $this->SetDrawColor(231, 76, 60);
+      $this->Line(70, 45, 125, 45);
+
+      $this->SetDrawColor(46, 204, 113);
+      $this->Line(125, 45, 180, 45);
+
+      $this->SetDrawColor(241, 196, 15);
+      $this->Line(180, 45, 195, 45);
+
+      $this->SetLineWidth(0.2);
+      $this->SetDrawColor(0, 0, 0);
+      $this->Ln(5);
+  }
 
   public function Footer() {
-    // Posicionar a 15 mm del final de la página
-    $this->SetY(-15);
+      $this->SetY(-20);
+      $this->SetLineWidth(0.5);
+      $this->SetDrawColor(52, 73, 94);
+      $this->Line(15, $this->GetY(), 195, $this->GetY());
+      $this->Ln(3);
 
-    // Línea superior del footer
-    $this->SetDrawColor(189, 195, 199);
-    $this->SetLineWidth(0.5);
-    $this->Line(15, $this->GetY() - 5, 195, $this->GetY() - 5);
+      $this->SetFont('helvetica', '', 8);
+      $this->SetTextColor(70, 70, 70);
+      $this->Cell(0, 4, 'Jr. 28 de Julio Nº 383 – Huamanga', 0, 1, 'C');
+      $this->Cell(0, 4, 'Teléfono: (066) 31-2364 | www.dreaya.gob.pe', 0, 1, 'C');
+  }
 
-    // Estilo del texto
-    $this->SetFont('helvetica', 'I', 8);
-    $this->SetTextColor(100, 100, 100);
-
-    // Texto de número de página centrado
-    $this->Cell(0, 10, 'Página ' . $this->getAliasNumPage() . ' de ' . $this->getAliasNbPages(), 0, 0, 'C');
-
-    // Reset de estilo
-    $this->SetTextColor(0, 0, 0);
-    $this->SetLineWidth(0.2);
-
-    }
+  public function AddSectionLabel($text) {
+      $this->Ln(5);
+      $this->SetFillColor(52, 73, 94);
+      $this->SetTextColor(255, 255, 255);
+      $this->SetFont('helvetica', 'B', 12);
+      $text_width = $this->GetStringWidth($text) + 10;
+      $x = (210 - $text_width) / 2;
+      $this->RoundedRect($x, $this->GetY(), $text_width, 8, 2, '1111', 'F');
+      $this->SetXY($x, $this->GetY() + 1);
+      $this->Cell($text_width, 6, $text, 0, false, 'C', 0, '', 0, false, 'M', 'M');
+      $this->SetTextColor(0, 0, 0);
+      $this->SetFillColor(255, 255, 255);
+      $this->Ln(12);
+  }
 }
 
 
