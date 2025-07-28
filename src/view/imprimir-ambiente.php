@@ -106,7 +106,7 @@ th, td {
          $contador ++;
     }
 
-    $fecha = new DateTime(); // new DateTime('2025-07-08') si deseas una fija
+           $fecha = new DateTime(); // new DateTime('2025-07-08') si deseas una fija
 
 $dia = $fecha->format('j'); // día sin cero a la izquierda
 $mesNumero = $fecha->format('m'); // número del mes
@@ -120,32 +120,32 @@ $meses = [
 
 // Año fijo: 2025
 $año = '2025';
+ $contenido_pdf .='  </tbody>
+  </table> 
 
-$contenido_pdf .='  </tbody>
-</table> 
-
-<div class="fecha">
-Ayacucho, '. $dia . " de " . $meses[$mesNumero] . " del " . $año.'
-</div>
+  <div class="fecha">
+    Ayacucho, '. $dia . " de " . $meses[$mesNumero] . " del " . $año.'
+  </div>
 <table  class="firma-section">
-<tr>
-<td>
-<div>
-  ------------------------------<br>
-  ENTREGUÉ CONFORME
-</div>
-</td>
-<td>
-<div>
-  ------------------------------<br>
-  RECIBÍ CONFORME
-</div>
-</td>
-</tr>
-</table>
+  <tr>
+  <td>
+    <div>
+      ------------------------------<br>
+      ENTREGUÉ CONFORME
+    </div>
+    </td>
+    <td>
+    <div>
+      ------------------------------<br>
+      RECIBÍ CONFORME
+    </div>
+    </td>
+   </tr>
+  </table>
 
 </body>
-</html>';
+</html>
+';
 
 
    
@@ -279,7 +279,7 @@ $pdf = new MYPDF();
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
 $pdf->SetAuthor('Yudith');
-$pdf->SetTitle('Reporte de ambiente');
+$pdf->SetTitle('Reporte de Ambiente');
 
 // 10. CONFIGURAR MÁRGENES Y PÁGINA
 $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT); 
@@ -301,5 +301,5 @@ $pdf->writeHTML($contenido_pdf, true, false, true, false, '');
 
 // 12. GENERAR Y MOSTRAR EL PDF
 // Generar archivo PDF con nombre único (incluye fecha y hora)
-$pdf->Output('reporte_ambientes_' . date('Ymd_His') . '.pdf', 'I');
+$pdf->Output('reporte_ambiente_' . date('Ymd_His') . '.pdf', 'I');
     }
