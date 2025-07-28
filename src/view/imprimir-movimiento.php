@@ -142,8 +142,7 @@ $meses = [
 // Año fijo: 2025
 $año = '2025';
 
-  $contenido_pdf .='
-  </tbody>
+  $contenido_pdf .=' </tbody>
   </table>
   <div class="lugar-fecha">
   <p><span class="underline">Ayacucho</span>, '. $dia . ' de ' . $meses[$mesNumero] . ' del ' . $año.'</p>
@@ -160,8 +159,7 @@ $año = '2025';
   </div>
 
 </body>
-</html>
-  ';
+</html> ';
 
   require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 

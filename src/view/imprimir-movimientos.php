@@ -138,7 +138,7 @@
         $contador +=1;
     }
 
-      $fecha = new DateTime(); // new DateTime('2025-07-08') si deseas una fija
+       $fecha = new DateTime(); // new DateTime('2025-07-08') si deseas una fija
 
 $dia = $fecha->format('j'); // día sin cero a la izquierda
 $mesNumero = $fecha->format('m'); // número del mes
@@ -152,31 +152,33 @@ $meses = [
 
 // Año fijo: 2025
 $año = '2025';
+
 $contenido_pdf .='  </tbody>
 </table> 
 
 <div class="fecha">
-  Ayacucho, '. $dia . " de " . $meses[$mesNumero] . " del " . $año.'
+Ayacucho, '. $dia . " de " . $meses[$mesNumero] . " del " . $año.'
 </div>
 <table  class="firma-section">
 <tr>
 <td>
-  <div>
-    ------------------------------<br>
-    ENTREGUÉ CONFORME
-  </div>
-  </td>
-  <td>
-  <div>
-    ------------------------------<br>
-    RECIBÍ CONFORME
-  </div>
-  </td>
- </tr>
+<div>
+  ------------------------------<br>
+  ENTREGUÉ CONFORME
+</div>
+</td>
+<td>
+<div>
+  ------------------------------<br>
+  RECIBÍ CONFORME
+</div>
+</td>
+</tr>
 </table>
 
 </body>
 </html>';
+
   require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 
 // Clase personalizada para agregar encabezado y pie de página
