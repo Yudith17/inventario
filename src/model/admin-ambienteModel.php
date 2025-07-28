@@ -80,7 +80,7 @@ class AmbienteModel
         return $arrRespuesta;
     }
 
-    public function listarAmbientes(){
+   public function listarAmbientes(){
         $respuest = array();
         $sql = $this->conexion->query("SELECT * FROM ambientes_institucion");
         while ($objeto = $sql->fetch_object()) {

@@ -1,4 +1,4 @@
-[5:50 p.m., 27/7/2025] Marycielo: <?php
+ <?php
 $ruta = explode("/", $_GET['views']);
 //if (!isset($ruta[1]) || $ruta[1]=="") { //si no existe la informacion
     //header ("location: " .BASE_URL. "bienes");
@@ -301,5 +301,5 @@ $pdf->writeHTML($contenido_pdf, true, false, true, false, '');
 
 // 12. GENERAR Y MOSTRAR EL PDF
 // Generar archivo PDF con nombre único (incluye fecha y hora)
-$pdf->Output('reporte_bienes_' . date('Ymd_His') . '.pdf', 'I');
+$pdf->Output('reporte_ambientes_' . date('Ymd_His') . '.pdf', 'I');
     }
