@@ -1,4 +1,8 @@
 <?php
+$ruta = explode("/", $_GET['views']);
+if (!isset($ruta[1]) || $ruta[1]=="") { //si no existe la informacion
+    header ("location: " .BASE_URL. "movimientos");
+}
 
     $curl = curl_init(); 
       curl_setopt_array($curl, array(
