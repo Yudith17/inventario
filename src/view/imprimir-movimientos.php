@@ -153,26 +153,25 @@ $meses = [
 // Año fijo: 2025
 $año = '2025';
 
-  $contenido_pdf .='
-  </tbody>
+
+$contenido_pdf .= '
+    </tbody>
   </table>
-  <div class="lugar-fecha">
-  <p><span class="underline">Ayacucho</span>, '. $dia . ' de ' . $meses[$mesNumero] . ' del ' . $año.'</p>
-</div>
-  <div class="firmas">
-    <div>
-      <p>-----------------------------</p>
-      <p>ENTREGUE CONFORME</p>
-    </div>
-    <div>
-      <p>-----------------------------</p>
-      <p>RECIBÍ CONFORME</p>
-    </div>
+
+  <div class="firma-container">
+  <div class="firma">
+    <p>------------------------------</p> 
+    <p>ENTREGUÉ CONFORME</p>
   </div>
+  <div class="firma">
+    <p>------------------------------</p>
+    <p>RECIBÍ CONFORME</p>
+  </div>
+</div>
 
 </body>
 </html>
-  ';
+';
   require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 
 // Clase personalizada para agregar encabezado y pie de página
