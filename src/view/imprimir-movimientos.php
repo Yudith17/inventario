@@ -1,38 +1,144 @@
 <?php
-$ruta = explode("/", $_GET['views']);
-if (!isset($ruta[1]) || $ruta[1]=="") { //si no existe la informacion
-    header ("location: " .BASE_URL. "movimientos");
-}
 
-    $curl = curl_init(); 
-      curl_setopt_array($curl, array(
-      CURLOPT_URL => BASE_URL_SERVER."src/control/Movimiento.php?tipo=ListarMovimientos&sesion=".$_SESSION['sesion_id']."&token=".$_SESSION['sesion_token'],
-      CURLOPT_RETURNTRANSFER => true, 
-      CURLOPT_FOLLOWLOCATION => true, 
-      CURLOPT_ENCODING => "", 
-      CURLOPT_MAXREDIRS => 10, 
-      CURLOPT_TIMEOUT => 30, 
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1, 
-      CURLOPT_CUSTOMREQUEST => "GET", 
-      CURLOPT_HTTPHEADER => array(
-          "x-rapidapi-host: ".BASE_URL_SERVER,
-          "x-rapidapi-key: XXXX"
-      ), 
-  )); 
-  $response = curl_exec($curl); 
-  $err = curl_error($curl); 
-  curl_close($curl); 
-  if ($err) {
-      echo "cURL Error #:" . $err; 
-  } else {
-    echo "<pre>";
-echo htmlspecialchars($response);
-echo "</pre>";
-die(); // Detén la ejecución temporalmente
-     $respuest = json_decode($response);
+    $curl = curl_init(); //inicia la sesión cURL
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => BASE_URL_SERVER."src/control/Movimiento.php?tipo=listarMovimientos&sesion=".$_SESSION['sesion_id']."&token=".$_SESSION['sesion_token'], //url a la que se conecta
+        CURLOPT_RETURNTRANSFER => true, //devuelve el resultado como una cadena del tipo curl_exec
+        CURLOPT_FOLLOWLOCATION => true, //sigue el encabezado que le envíe el servidor
+        CURLOPT_ENCODING => "", // permite decodificar la respuesta y puede ser"identity", "deflate", y "gzip", si está vacío recibe todos los disponibles.
+        CURLOPT_MAXREDIRS => 10, // Si usamos CURLOPT_FOLLOWLOCATION le dice el máximo de encabezados a seguir
+        CURLOPT_TIMEOUT => 30, // Tiempo máximo para ejecutar
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1, // usa la versión declarada
+        CURLOPT_CUSTOMREQUEST => "GET", // el tipo de petición, puede ser PUT, POST, GET o Delete dependiendo del servicio
+        CURLOPT_HTTPHEADER => array(
+            "x-rapidapi-host: ".BASE_URL_SERVER,
+            "x-rapidapi-key: XXXX"
+        ), //configura las cabeceras enviadas al servicio
+    )); //curl_setopt_array configura las opciones para una transferencia cURL
 
-     $movimientos = $respuest->movimientos;
-     $fecha = new DateTime(); // new DateTime('2025-07-08') si deseas una fija
+    $response = curl_exec($curl); // respuesta generada
+    $err = curl_error($curl); // muestra errores en caso de existir
+
+    curl_close($curl); // termina la sesión 
+
+    if ($err) {
+        echo "cURL Error #:" . $err; // mostramos el error
+    } else {
+        $respuesta = json_decode($response);
+        $contenido = $respuesta->contenido;
+       // print_r($respuesta);
+      $contenido_pdf = '';
+     $contenido_pdf = '
+           <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Lista de movimientos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+
+    h2 {
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .info {
+      margin-bottom: 20px;
+    }
+
+    .info p {
+      margin: 5px 0;
+    }
+
+    .info span.label {
+      font-weight: bold;
+      display: inline-block;
+      width: 100px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid black;
+    }
+
+    th, td {
+      text-align: center;
+      padding: 5px;
+    }
+
+    .firma-container {
+      margin-top: 80px;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+
+    .firma {
+      text-align: center;
+    }
+
+    .fecha {
+      text-align: right;
+      margin-top: 30px;
+    }
+       table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 9pt;
+  }
+  th, td {
+    border: 1px solid #000;
+    padding: 4px;
+    text-align: center;
+  }
+  thead th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+
+  </style>
+</head>
+<body>
+
+  <h2>LISTA DE MOVIMIENTOS</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ITEM</th>
+        <th>AMBIENTE ORIGEN</th>
+        <th>AMBIENTE DESTINO</th>
+        <th>USUARIO REGISTRO</th>
+        <th>FECHA</th>
+        <th>DESCRIPCION</th>
+        <th>INSTITUCION</th>
+      </tr>
+    </thead>
+      <tbody>
+      ';
+ 
+    $contador = 1;
+    foreach ($contenido as $movimientos) {
+       $contenido_pdf .= "<tr>";
+        $contenido_pdf .=  "<td>" . $contador . "</td>";
+        $contenido_pdf .=  "<td>" . $movimientos->origen . "</td>";
+        $contenido_pdf .=  "<td>" . $movimientos->destino . "</td>";
+        $contenido_pdf .=  "<td>" . $movimientos->usuario . "</td>";
+        $contenido_pdf .=  "<td>" . $movimientos->fecha_registro . "</td>";
+        $contenido_pdf .=  "<td>" . $movimientos->descripcion . "</td>";
+        $contenido_pdf .=  "<td>" . $movimientos->institucion . "</td>";
+        $contenido_pdf .=  "</tr>";
+        $contador +=1;
+    }
+
+   $fecha = new DateTime(); // new DateTime('2025-07-08') si deseas una fija
 
 $dia = $fecha->format('j'); // día sin cero a la izquierda
 $mesNumero = $fecha->format('m'); // número del mes
@@ -47,71 +153,26 @@ $meses = [
 // Año fijo: 2025
 $año = '2025';
 
-     $contenido_pdf = '';
+  $contenido_pdf .='
+  </tbody>
+  </table>
+  <div class="lugar-fecha">
+  <p><span class="underline">Ayacucho</span>, '. $dia . ' de ' . $meses[$mesNumero] . ' del ' . $año.'</p>
+</div>
+  <div class="firmas">
+    <div>
+      <p>-----------------------------</p>
+      <p>ENTREGUE CONFORME</p>
+    </div>
+    <div>
+      <p>-----------------------------</p>
+      <p>RECIBÍ CONFORME</p>
+    </div>
+  </div>
 
-     $contenido_pdf .= '<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<title>Papeleta de Rotación de ambientes</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    margin: 40px;
-  }
-  h2 {
-    text-align: center;
-    text-transform: uppercase;
-  }
-  .info {
-    margin-bottom: 20px;
-    line-height: 1.8;
-  }
-  .info b {
-    display: inline-block;
-    width: 80px;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-    font-size:9px;
-  }
-  th, td {
-    border: 1px solid black;
-    text-align: center;
-    padding: 6px;
-  }
-  .fecha {
-    margin-top: 30px;
-    text-align: right;
-  }
-
-  .firma-section tr td{
-     border: none;
-    }
-
-</style>
-</head>
-<body>
-
-<h2>REPORTE DE MOVIMIENTOS</h2>
-
-<table>
-  <thead>
-    <tr>
-      <th>ITEM</th>
-      <th>AMBIENTE</th>
-      <th>DESTINO</th>
-      <th>USUARIO</th>
-      <th>FECHA REGISTRO</th>
-      <th>DESCRIPCION</th>
-      <th>INSTITUCION</th>
-    </tr>
-  </thead>
-  <tbody>';   
-
-   
+</body>
+</html>
+  ';
   require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
 
 // Clase personalizada para agregar encabezado y pie de página
