@@ -1,4 +1,4 @@
- <?php
+<?php
 $ruta = explode("/", $_GET['views']);
 //if (!isset($ruta[1]) || $ruta[1]=="") { //si no existe la informacion
     //header ("location: " .BASE_URL. "bienes");
@@ -30,7 +30,6 @@ if ($err) {
 
    $ambientes = $respuesta->contenido;
 
-    
    $contenido_pdf = '';
 
    $contenido_pdf .= '<!DOCTYPE html>
@@ -105,8 +104,7 @@ th, td {
          $contenido_pdf .=  '</tr>';
          $contador ++;
     }
-
-           $fecha = new DateTime(); // new DateTime('2025-07-08') si deseas una fija
+    $fecha = new DateTime(); // new DateTime('2025-07-08') si deseas una fija
 
 $dia = $fecha->format('j'); // día sin cero a la izquierda
 $mesNumero = $fecha->format('m'); // número del mes
@@ -120,32 +118,32 @@ $meses = [
 
 // Año fijo: 2025
 $año = '2025';
- $contenido_pdf .='  </tbody>
-  </table> 
 
-  <div class="fecha">
-    Ayacucho, '. $dia . " de " . $meses[$mesNumero] . " del " . $año.'
-  </div>
+$contenido_pdf .='  </tbody>
+</table> 
+
+<div class="fecha">
+Ayacucho, '. $dia . " de " . $meses[$mesNumero] . " del " . $año.'
+</div>
 <table  class="firma-section">
-  <tr>
-  <td>
-    <div>
-      ------------------------------<br>
-      ENTREGUÉ CONFORME
-    </div>
-    </td>
-    <td>
-    <div>
-      ------------------------------<br>
-      RECIBÍ CONFORME
-    </div>
-    </td>
-   </tr>
-  </table>
+<tr>
+<td>
+<div>
+  ------------------------------<br>
+  ENTREGUÉ CONFORME
+</div>
+</td>
+<td>
+<div>
+  ------------------------------<br>
+  RECIBÍ CONFORME
+</div>
+</td>
+</tr>
+</table>
 
 </body>
-</html>
-';
+</html>';
 
 
    
