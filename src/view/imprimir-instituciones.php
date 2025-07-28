@@ -275,8 +275,8 @@ class MYPDF extends TCPDF {
 $pdf = new MYPDF();
 // set document information
 $pdf->SetCreator(PDF_CREATOR);
-$pdf->SetAuthor('Marycielo');
-$pdf->SetTitle('Reporte de bienes');
+$pdf->SetAuthor('Yudith');
+$pdf->SetTitle('Reporte de Institucion');
 
 // 10. CONFIGURAR MÁRGENES Y PÁGINA
 $pdf->SetMargins(PDF_MARGIN_LEFT, 45, PDF_MARGIN_RIGHT); 
@@ -298,5 +298,5 @@ $pdf->writeHTML($contenido_pdf, true, false, true, false, '');
 
 // 12. GENERAR Y MOSTRAR EL PDF
 // Generar archivo PDF con nombre único (incluye fecha y hora)
-$pdf->Output('reporte_bienes_' . date('Ymd_His') . '.pdf', 'I');
+$pdf->Output('reporte_institucion_' . date('Ymd_His') . '.pdf', 'I');
     }
