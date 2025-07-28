@@ -1,8 +1,4 @@
 <?php
-$ruta = explode("/", $_GET['views']);
-if (!isset($ruta[1]) || $ruta[1]=="") { //si no existe la informacion
-    header ("location: " .BASE_URL. "movimientos");
-}
 
     $curl = curl_init(); 
       curl_setopt_array($curl, array(
@@ -109,53 +105,7 @@ $año = '2025';
       <th>INSTITUCION</th>
     </tr>
   </thead>
-  <tbody>';  
-          $contador = 1;
-foreach ($movimientos as $mov) {
-    $contenido_pdf .= '<tr>';
-    $contenido_pdf .= "<td>" . $contador . "</td>";
-    $contenido_pdf .= "<td>" . $mov->ambiente . "</td>";
-    $contenido_pdf .= "<td>" . $mov->destino . "</td>";
-    $contenido_pdf .= "<td>" . $mov->usuario . "</td>";
-    $contenido_pdf .= "<td>" . $mov->fecha_registro . "</td>";
-    $contenido_pdf .= "<td>" . $mov->descripcion . "</td>";
-    $contenido_pdf .= "<td>" . $mov->institucion . "</td>";
-    $contenido_pdf .= '</tr>';
-    $contador++;
-}
-$fecha = new DateTime();
-$dia = $fecha->format('j');
-$mesNumero = $fecha->format('m');
-$meses = [
-  '01' => 'enero', '02' => 'febrero', '03' => 'marzo', '04' => 'abril',
-  '05' => 'mayo', '06' => 'junio', '07' => 'julio', '08' => 'agosto',
-  '09' => 'septiembre', '10' => 'octubre', '11' => 'noviembre', '12' => 'diciembre'
-];
-$año = '2025';
-
-$contenido_pdf .= '</tbody>
-</table>
-
-<div class="fecha">
-  Ayacucho, ' . $dia . ' de ' . $meses[$mesNumero] . ' del ' . $año . '
-</div>
-
-<table class="firma-section">
-  <tr>
-    <td>
-      ------------------------------<br>
-      ENTREGUÉ CONFORME
-    </td>
-    <td>
-      ------------------------------<br>
-      RECIBÍ CONFORME
-    </td>
-  </tr>
-</table>
-
-</body>
-</html>';
- 
+  <tbody>';   
 
    
   require_once('./vendor/tecnickcom/tcpdf/tcpdf.php');
