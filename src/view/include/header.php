@@ -112,11 +112,10 @@
                                     </a>
                                     <div class="dropdown-menu" aria-labelledby="topnav-components">
                                         <a href="<?php echo BASE_URL ?>usuarios" class="dropdown-item">Usuarios</a>
-                                        <a href="<?php echo BASE_URL ?>instituciones" class="dropdown-item">Instituciones</a>
-                                        <a href="<?php echo BASE_URL ?>ambientes" class="dropdown-item">Ambientes</a>
-                                        <a href="<?php echo BASE_URL ?>bienes" class="dropdown-item">Bienes</a>
-                                        <a href="<?php echo BASE_URL ?>movimientos" class="dropdown-item">Movimientos</a>
-                                        <a href="<?php echo BASE_URL ?>reportes" class="dropdown-item">Reportes</a>
+                                        <a href="<?php echo BASE_URL ?>hoteles" class="dropdown-item">Hoteles</a>
+                                        <a href="<?php echo BASE_URL ?>clientes-api" class="dropdown-item">Clientes API</a>
+                                        <a href="<?php echo BASE_URL ?>reportes" class="dropdown-item">Reportes</a><!-- En tu archivo de menú (header.php o similar) -->
+
                                     </div>
                                 </li>
 

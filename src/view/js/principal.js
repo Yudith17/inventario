@@ -5,6 +5,7 @@ function mostrarPopupCarga() {
         popup.style.display = 'flex';
     }
 }
+
 // Ocultar el popup de carga
 function ocultarPopupCarga() {
     const popup = document.getElementById('popup-carga');
@@ -12,7 +13,8 @@ function ocultarPopupCarga() {
         popup.style.display = 'none';
     }
 }
-//funcion en caso de session acudacada
+
+//funcion en caso de session caducada
 async function alerta_sesion() {
     Swal.fire({
         type: 'error',
@@ -24,13 +26,14 @@ async function alerta_sesion() {
     });
     location.replace(base_url + "login");
 }
-// cargar elementos de menu
-async function cargar_institucion_menu(id_ies = 0) {
+
+// cargar hoteles en el menu
+async function cargar_hoteles_menu(id_hotel = 0) {
     const formData = new FormData();
     formData.append('sesion', session_session);
     formData.append('token', token_token);
     try {
-        let respuesta = await fetch(base_url_server + 'src/control/Institucion.php?tipo=listar', {
+        let respuesta = await fetch(base_url_server + 'src/control/Hotel.php?tipo=listar_activos', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
@@ -40,45 +43,92 @@ async function cargar_institucion_menu(id_ies = 0) {
         if (json.status) {
             let datos = json.contenido;
             let contenido = '';
-            let sede = '';
+            let hotel_seleccionado = 'Seleccionar Hotel';
+            
             datos.forEach(item => {
-                if (id_ies == item.id) {
-                    sede = item.nombre;
+                if (id_hotel == item.id) {
+                    hotel_seleccionado = item.nombre;
                 }
-                contenido += `<button href="javascript:void(0);" class="dropdown-item notify-item" onclick="actualizar_ies_menu(${item.id});">${item.nombre}</button>`;
+                contenido += `<button href="javascript:void(0);" class="dropdown-item notify-item" onclick="actualizar_hotel_menu(${item.id});">${item.nombre}</button>`;
             });
-            document.getElementById('contenido_menu_ies').innerHTML = contenido;
-            document.getElementById('menu_ies').innerHTML = sede;
+            
+            if (document.getElementById('contenido_menu_hoteles')) {
+                document.getElementById('contenido_menu_hoteles').innerHTML = contenido;
+            }
+            if (document.getElementById('menu_hotel')) {
+                document.getElementById('menu_hotel').innerHTML = hotel_seleccionado;
+            }
         }
-        //console.log(respuesta);
     } catch (e) {
-        console.log("Error al cargar categorias" + e);
+        console.log("Error al cargar hoteles: " + e);
     }
+}
 
+async function cargar_datos_menu(hotel) {
+    cargar_hoteles_menu(hotel);
 }
-async function cargar_datos_menu(sede) {
-    cargar_institucion_menu(sede);
+
+// actualizar hotel en el menu
+// Elimina o comenta estas funciones viejas que ya no existen
+/*
+async function cargar_institucion_menu(id_ies = 0) {
+    // Esta función ya no existe
 }
-// actualizar elementos del menu
-async function actualizar_ies_menu(id) {
+*/
+
+// En su lugar, asegúrate de tener esta función:
+async function cargar_hoteles_menu(id_hotel = 0) {
     const formData = new FormData();
-    formData.append('id_ies', id);
+    formData.append('sesion', session_session);
+    formData.append('token', token_token);
     try {
-        let respuesta = await fetch(base_url + 'src/control/sesion_cliente.php?tipo=actualizar_ies_sesion', {
+        let respuesta = await fetch(base_url_server + 'src/control/Hotel.php?tipo=listar_activos', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
             body: formData
         });
-        let json = await respuesta.json();
-        if (json.status) {
-            location.reload();
+        
+        // Verificar si la respuesta es HTML en lugar de JSON
+        const text = await respuesta.text();
+        let json;
+        
+        try {
+            json = JSON.parse(text);
+        } catch (parseError) {
+            console.error("Error parsing JSON:", parseError);
+            console.log("Response was:", text);
+            return;
         }
-        //console.log(respuesta);
+        
+        if (json.status) {
+            let datos = json.contenido;
+            let contenido = '';
+            let hotel_seleccionado = 'Seleccionar Hotel';
+            
+            datos.forEach(item => {
+                if (id_hotel == item.id) {
+                    hotel_seleccionado = item.nombre;
+                }
+                contenido += `<button href="javascript:void(0);" class="dropdown-item notify-item" onclick="actualizar_hotel_menu(${item.id});">${item.nombre}</button>`;
+            });
+            
+            if (document.getElementById('contenido_menu_hoteles')) {
+                document.getElementById('contenido_menu_hoteles').innerHTML = contenido;
+            }
+            if (document.getElementById('menu_hotel')) {
+                document.getElementById('menu_hotel').innerHTML = hotel_seleccionado;
+            }
+        }
     } catch (e) {
-        console.log("Error al cargar instituciones" + e);
+        console.log("Error al cargar hoteles: " + e);
     }
 }
+
+async function cargar_datos_menu(hotel) {
+    cargar_hoteles_menu(hotel);
+}
+
 function generar_paginacion(total, cantidad_mostrar) {
     let actual = document.getElementById('pagina').value;
     let paginas = Math.ceil(total / cantidad_mostrar);
@@ -92,11 +142,13 @@ function generar_paginacion(total, cantidad_mostrar) {
         paginacion += ' disabled';
     }
     paginacion += '"><button class="page-link waves-effect" onclick="numero_pagina(' + (actual - 1) + ');">Anterior</button></li>';
+    
     if (actual > 4) {
         var iin = (actual - 2);
     } else {
         var iin = 1;
     }
+    
     for (let index = iin; index <= paginas; index++) {
         if ((paginas - 7) > index) {
             var n_n = iin + 5;
@@ -112,6 +164,7 @@ function generar_paginacion(total, cantidad_mostrar) {
         }
         paginacion += '" ><button class="page-link" onclick="numero_pagina(' + index + ');">' + index + '</button></li>';
     }
+    
     paginacion += '<li class="page-item ';
     if (actual >= paginas) {
         paginacion += "disabled";
@@ -123,50 +176,115 @@ function generar_paginacion(total, cantidad_mostrar) {
         paginacion += "disabled";
     }
     paginacion += '"><button class="page-link" onclick="numero_pagina(' + paginas + ');">Final</button></li>';
+    
     return paginacion;
 }
+
 function generar_texto_paginacion(total, cantidad_mostrar) {
     let actual = document.getElementById('pagina').value;
     let paginas = Math.ceil(total / cantidad_mostrar);
     let iniciar = (actual - 1) * cantidad_mostrar;
-    if (actual < paginas) {
-
-        var texto = '<label>Mostrando del ' + (parseInt(iniciar) + 1) + ' al ' + ((parseInt(iniciar) + 1) + 9) + ' de un total de ' + total + ' registros</label>';
-    } else {
-        var texto = '<label>Mostrando del ' + (parseInt(iniciar) + 1) + ' al ' + total + ' de un total de ' + total + ' registros</label>';
+    let fin = parseInt(iniciar) + parseInt(cantidad_mostrar);
+    
+    if (fin > total) {
+        fin = total;
     }
+    
+    var texto = '<label>Mostrando del ' + (parseInt(iniciar) + 1) + ' al ' + fin + ' de un total de ' + total + ' registros</label>';
     return texto;
 }
+
 // ---------------------------------------------  DATOS DE CARGA PARA FILTRO DE BUSQUEDA -----------------------------------------------
-//cargar programas de estudio
-function cargar_ambientes_filtro(datos, form = 'busqueda_tabla_ambiente', filtro = 'filtro_ambiente') {
-    let ambiente_actual = document.getElementById(filtro).value;
-    lista_ambiente = `<option value="0">TODOS</option>`;
-    datos.forEach(ambiente => {
-        pe_selected = "";
-        if (ambiente.id == ambiente_actual) {
-            pe_selected = "selected";
+//cargar habitaciones para filtro
+function cargar_habitaciones_filtro(datos, form = 'busqueda_tabla_habitacion', filtro = 'filtro_habitacion') {
+    let habitacion_actual = document.getElementById(filtro).value;
+    let lista_habitaciones = `<option value="0">TODAS</option>`;
+    
+    datos.forEach(habitacion => {
+        let selected = "";
+        if (habitacion.id == habitacion_actual) {
+            selected = "selected";
         }
-        lista_ambiente += `<option value="${ambiente.id}" ${pe_selected}>${ambiente.detalle}</option>`;
+        lista_habitaciones += `<option value="${habitacion.id}" ${selected}>${habitacion.numero_habitacion} - ${habitacion.tipo_habitacion}</option>`;
     });
-    document.getElementById(form).innerHTML = lista_ambiente;
+    
+    if (document.getElementById(form)) {
+        document.getElementById(form).innerHTML = lista_habitaciones;
+    }
 }
-//cargar programas de estudio
-function cargar_sede_filtro(sedes) {
-    let sede_actual = document.getElementById('sede_actual_filtro').value;
-    lista_sede = `<option value="0">TODOS</option>`;
-    sedes.forEach(sede => {
-        sede_selected = "";
-        if (sede.id == sede_actual) {
-            sede_selected = "selected";
+
+//cargar hoteles para filtro
+function cargar_hoteles_filtro(hoteles) {
+    let hotel_actual = document.getElementById('hotel_actual_filtro').value;
+    let lista_hoteles = `<option value="0">TODOS</option>`;
+    
+    hoteles.forEach(hotel => {
+        let hotel_selected = "";
+        if (hotel.id == hotel_actual) {
+            hotel_selected = "selected";
         }
-        lista_sede += `<option value="${sede.id}" ${sede_selected}>${sede.nombre}</option>`;
+        lista_hoteles += `<option value="${hotel.id}" ${hotel_selected}>${hotel.nombre}</option>`;
     });
-    document.getElementById('busqueda_tabla_sede').innerHTML = lista_sede;
+    
+    if (document.getElementById('busqueda_tabla_hotel')) {
+        document.getElementById('busqueda_tabla_hotel').innerHTML = lista_hoteles;
+    }
+}
+
+//cargar tipos de habitacion para filtro
+function cargar_tipos_habitacion_filtro() {
+    const tipos = [
+        {id: 'individual', nombre: 'Individual'},
+        {id: 'doble', nombre: 'Doble'},
+        {id: 'suite', nombre: 'Suite'},
+        {id: 'familiar', nombre: 'Familiar'},
+        {id: 'ejecutiva', nombre: 'Ejecutiva'}
+    ];
+    
+    let tipo_actual = document.getElementById('tipo_habitacion_actual').value;
+    let lista_tipos = `<option value="">TODOS</option>`;
+    
+    tipos.forEach(tipo => {
+        let tipo_selected = "";
+        if (tipo.id == tipo_actual) {
+            tipo_selected = "selected";
+        }
+        lista_tipos += `<option value="${tipo.id}" ${tipo_selected}>${tipo.nombre}</option>`;
+    });
+    
+    if (document.getElementById('busqueda_tabla_tipo_habitacion')) {
+        document.getElementById('busqueda_tabla_tipo_habitacion').innerHTML = lista_tipos;
+    }
+}
+
+//cargar estados de reserva para filtro
+function cargar_estados_reserva_filtro() {
+    const estados = [
+        {id: 'pendiente', nombre: 'Pendiente'},
+        {id: 'confirmada', nombre: 'Confirmada'},
+        {id: 'activa', nombre: 'Activa'},
+        {id: 'completada', nombre: 'Completada'},
+        {id: 'cancelada', nombre: 'Cancelada'}
+    ];
+    
+    let estado_actual = document.getElementById('estado_reserva_actual').value;
+    let lista_estados = `<option value="">TODOS</option>`;
+    
+    estados.forEach(estado => {
+        let estado_selected = "";
+        if (estado.id == estado_actual) {
+            estado_selected = "selected";
+        }
+        lista_estados += `<option value="${estado.id}" ${estado_selected}>${estado.nombre}</option>`;
+    });
+    
+    if (document.getElementById('busqueda_tabla_estado_reserva')) {
+        document.getElementById('busqueda_tabla_estado_reserva').innerHTML = lista_estados;
+    }
 }
 
 // ------------------------------------------- FIN DE DATOS DE CARGA PARA FILTRO DE BUSQUEDA -----------------------------------------------
-async function validar_datos_reset_password(params) {
+async function validar_datos_reset_password() {
     let id = document.getElementById('data').value;
     let token = document.getElementById('data2').value;
     const formData = new FormData();
@@ -192,13 +310,12 @@ async function validar_datos_reset_password(params) {
                 footer: '',
                 timer: 1000
             });
-            // Opcional: redirigir al login después de un tiempo
             setTimeout(() => {
                 location.replace(base_url + "login");
             }, 1500);
         }
     } catch (e) {
-        console.log("Error al validar datos" + e);
+        console.log("Error al validar datos: " + e);
     }
 }
 
@@ -232,12 +349,10 @@ function validar_imputs_password() {
 }
 
 async function actualizar_password() {
-    // Obtener los datos necesarios
     let id = document.getElementById('data').value;
     let token = document.getElementById('data2').value;
     let nueva_password = document.getElementById('password').value;
     
-    // Crear FormData con la información
     const formData = new FormData();
     formData.append('id', id);
     formData.append('token', token);
@@ -245,7 +360,6 @@ async function actualizar_password() {
     formData.append('sesion', '');
     
     try {
-        // Mostrar loading
         Swal.fire({
             title: 'Actualizando...',
             text: 'Por favor espere',
@@ -256,7 +370,6 @@ async function actualizar_password() {
             }
         });
         
-        // Enviar datos al controlador
         let respuesta = await fetch(base_url_server + 'src/control/Usuario.php?tipo=actualizar_password_reset', {
             method: 'POST',
             mode: 'cors',
@@ -267,7 +380,6 @@ async function actualizar_password() {
         let json = await respuesta.json();
         
         if (json.status == true) {
-            // Éxito - contraseña actualizada
             Swal.fire({
                 type: 'success',
                 title: 'Éxito',
@@ -276,11 +388,9 @@ async function actualizar_password() {
                 footer: '',
                 timer: 2000
             }).then(() => {
-                // Redirigir al login después del éxito
                 location.replace(base_url + "login");
             });
         } else {
-            // Error al actualizar
             Swal.fire({
                 type: 'error',
                 title: 'Error',
@@ -302,4 +412,47 @@ async function actualizar_password() {
             timer: 2000
         });
     }
+}
+
+// Función para formatear fecha
+function formatearFecha(fecha) {
+    if (!fecha) return '';
+    const date = new Date(fecha);
+    return date.toLocaleDateString('es-ES');
+}
+
+// Función para formatear moneda
+function formatearMoneda(monto) {
+    if (!monto) return 'S/ 0.00';
+    return 'S/ ' + parseFloat(monto).toFixed(2);
+}
+
+// Función para validar email
+function validarEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+// Función para validar DNI
+function validarDNI(dni) {
+    return /^\d{8}$/.test(dni);
+}
+
+// Función para validar RUC
+function validarRUC(ruc) {
+    return /^\d{11}$/.test(ruc);
+}
+
+// Función para calcular días entre dos fechas
+function calcularDias(fechaInicio, fechaFin) {
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+    const diffTime = Math.abs(fin - inicio);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+}
+
+// Función para validar que un elemento exista antes de usarlo
+function elementExists(id) {
+    return document.getElementById(id) !== null;
 }
