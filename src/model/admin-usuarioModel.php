@@ -143,9 +143,21 @@ class UsuarioModel
         return $arrRespuesta;
     }
 
+<<<<<<< HEAD
     // Método para depuración - obtener el último error
     public function getLastError()
     {
         return $this->conexion->error;
     }
 }
+=======
+    public function listarUsuarios(){
+        $arrRespuesta = array();
+      $sql = $this->conexion->query("SELECT * FROM usuarios");
+      while ($objeto = $sql->fetch_object()) {
+          array_push($arrRespuesta, $objeto);
+      }
+      return $arrRespuesta;
+  }
+}
+>>>>>>> 20cf708c6cb11a97058400688450a9d2e0ce9ba8
